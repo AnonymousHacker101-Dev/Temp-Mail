@@ -371,4 +371,139 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400 truncate mt-1">${escapeHTML(msg.intro)}</p>
                     `;
                     DOMElements.inboxList.appendChild(emailItem);
-     
+     emailItem.addEventListener('click', () => openEmail(msg.id));
+                });
+            }
+        };
+
+        const showHomeScreen = () => {
+            DOMElements.emailScreen.classList.add('hidden');
+            DOMElements.emailScreen.classList.remove('flex');
+            DOMElements.homeScreen.classList.remove('hidden');
+        };
+
+        const copyToClipboard = () => {
+            if (!currentAccount.address) return;
+            navigator.clipboard.writeText(currentAccount.address)
+                .then(() => showToast("Copied!", "success"))
+                .catch(() => showToast("Failed to copy", "error"));
+        };
+
+        const startTimer = () => {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+                const seconds = (timerSeconds % 60).toString().padStart(2, '0');
+                DOMElements.timerDisplay.textContent = `${minutes}:${seconds}`;
+
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    DOMElements.timerDisplay.textContent = "Expired";
+                    showToast("Timer expired! Extend or get new email.", "warning");
+                }
+            }, 1000);
+        };
+
+        const extendTimer = () => {
+            timerSeconds = 600;
+            DOMElements.timerDisplay.textContent = "10:00";
+            startTimer();
+        };
+
+        const showToast = (message, type = 'info') => {
+            const toast = document.createElement('div');
+            const colors = {
+                info: 'bg-gray-700 text-white',
+                success: 'bg-green-500 text-white',
+                warning: 'bg-yellow-500 text-white',
+                error: 'bg-red-500 text-white',
+            };
+            toast.className = `px-4 py-2 rounded-full shadow-lg text-sm font-semibold toast-in ${colors[type]}`;
+            toast.textContent = message;
+            document.getElementById('toast-container').appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('toast-in');
+                toast.classList.add('toast-out');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, 3000);
+        };
+
+        const escapeHTML = (str) => {
+            const p = document.createElement('p');
+            p.textContent = str;
+            return p.innerHTML;
+        };
+
+        const formatDate = (date) => {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            const intervals = [
+                { label: 'y', seconds: 31536000 },
+                { label: 'mo', seconds: 2592000 },
+                { label: 'd', seconds: 86400 },
+                { label: 'h', seconds: 3600 },
+                { label: 'm', seconds: 60 },
+            ];
+            for (const i of intervals) {
+                const count = Math.floor(seconds / i.seconds);
+                if (count >= 1) return `${count}${i.label} ago`;
+            }
+            return 'Just now';
+        };
+
+        const showSpinner = (button, show) => {
+            if (show) {
+                button.dataset.original = button.innerHTML;
+                button.innerHTML = '<span class="spinner"></span>';
+                button.disabled = true;
+            } else {
+                button.innerHTML = button.dataset.original;
+                button.disabled = false;
+            }
+        };
+
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                DOMElements.themeIcon.textContent = 'light_mode';
+            } else {
+                document.documentElement.classList.remove('dark');
+                DOMElements.themeIcon.textContent = 'dark_mode';
+            }
+        };
+
+        const toggleTheme = () => {
+            const current = localStorage.getItem('theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', next);
+            applyTheme(next);
+        };
+
+        const initApp = async () => {
+            applyTheme(localStorage.getItem('theme') || 'light');
+
+            setTimeout(() => {
+                DOMElements.splashScreen.style.opacity = '0';
+                DOMElements.appContainer.style.opacity = '1';
+                DOMElements.splashScreen.addEventListener('transitionend', () => {
+                    DOMElements.splashScreen.style.display = 'none';
+                });
+            }, 2000);
+
+            await getNewEmail();
+
+            DOMElements.copyBtn.addEventListener('click', copyToClipboard);
+            DOMElements.changeMailBtn.addEventListener('click', () => getNewEmail(false));
+            DOMElements.deleteMailBtn.addEventListener('click', () => getNewEmail(true));
+            DOMElements.refreshBtn.addEventListener('click', checkInbox);
+            DOMElements.extendTimerBtn.addEventListener('click', extendTimer);
+            DOMElements.themeToggleBtn.addEventListener('click', toggleTheme);
+            DOMElements.backToInboxBtn.addEventListener('click', showHomeScreen);
+        };
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
+
