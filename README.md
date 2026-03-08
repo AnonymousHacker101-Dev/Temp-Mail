@@ -19,6 +19,21 @@ It allows users to generate disposable email addresses that can be used for test
 - Protecting privacy when signing up for services
 - Development environments
 
+## Usage
+
+1. Open the project in your browser or deploy it online.
+2. Generate a temporary email address.
+3. Use the address for testing signups or verification flows.
+4. View incoming emails in the temporary inbox interface.
+
+## Live Demo
+
+Visit the live project link from the About section of this repository.
+
+## Security
+
+If you find a vulnerability, please check the SECURITY.md file and report it responsibly.
+
 ## Installation
 
 1. Clone the repository
