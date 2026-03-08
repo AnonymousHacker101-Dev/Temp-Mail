@@ -26,10 +26,6 @@ It allows users to generate disposable email addresses that can be used for test
 3. Use the address for testing signups or verification flows.
 4. View incoming emails in the temporary inbox interface.
 
-## Screenshot
-
-![Temp-Mail Screenshot](screenshot.jpg)
-
 ## Live Demo
 
 Visit the live project link from the About section of this repository.
@@ -37,6 +33,12 @@ Visit the live project link from the About section of this repository.
 ## Security
 
 If you find a vulnerability, please check the SECURITY.md file and report it responsibly.
+
+
+## Screenshot
+
+![Temp-Mail Screenshot](screenshot.jpg)
+
 
 ## Installation
 
